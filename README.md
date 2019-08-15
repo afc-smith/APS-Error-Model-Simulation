@@ -1,5 +1,4 @@
 # APS-Error-Model-Simulation
-Example code for running error model simulation to derive outcome-based analytical performance specifications (APS)
 
 The files in this repository provide an illustrative example of how to run an error model simulation to derive outcome-based analytical performance specifications (APS). 
 
