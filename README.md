@@ -3,7 +3,7 @@
 The files in this repository provide an illustrative example of how to run an error model simulation to derive outcome-based analytical performance specifications (APS). 
 
 This code was developed to accompany the following manuscript: 
-Smith AF, Messenger MP, Hulme CT, Turvill J, Hall PS and Shinkins B. Setting outcome-based analytical performance specifications using simulation: a case study of faecal calprotectin. Clin Chem; submitted.
+Smith AF, Messenger MP, Hulme CT, Turvill J, Hall PS and Shinkins B. Setting outcome-based analytical performance specifications using simulation: a case study of faecal calprotectin. TBC.
 
 Licence for use
 
