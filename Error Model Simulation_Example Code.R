@@ -6,7 +6,7 @@
 #----------------------------- 0.0 Notes on code ---------------------------------
 
 # This code was written by Ms. Alison F Smith to accompany the publication:
-#'Smith AF, Messenger MP, Hulme CT, Turvil J, Hall PS and Shinkins B. Setting outcome-based analytical performance specifications using simulation: a case study of faecal calprotectin. Clin Chem 2019; in press'
+#'Smith AF, Messenger MP, Hulme CT, Turvil J, Hall PS and Shinkins B. Setting outcome-based analytical performance specifications using simulation: a case study of faecal calprotectin. TBC'
 
 # The code provides an illustrative example of how to run an error model simulation, using parametric or bootstrap sampling
 # To avoid data sharing issues, the bootstrap method is based on a mock dataset for the YFCCP data (see notes under this method section)
@@ -48,8 +48,8 @@ rm(list=ls())
 FC_cutoff     <- 100        
 
 #---- Set number of simulations 
-Nsim          <- 10000        #Base case analyses = 10000 (recommend using at least 5,000 to minimise noise)
-#Nsim         <- 100000       #Sensitivity analyses [1.7 and 2.8]: Nsim = 100000
+Nsim          <- 10000        #Primary analyses = 10000 (recommend using at least 5,000 to minimise noise)
+#Nsim         <- 100000       #Secondary analyses [1.7 and 2.8]: Nsim = 100000
 
 #---- Set random number seed (ensures future runs of the code produce the same output)
 seed <<- 10
@@ -64,23 +64,23 @@ Imp_values   <- seq(0, 1, by=0.005)
 Bias_values  <- seq(-100, 100, length.out=length(Imp_values))   
 
 #---- Smoothing algorithm
-analysis_smooth <- "Yes"   #Base case: smoothing algorithm applied
-#analysis_smooth <- "No"   #sensitivity analyses [1.6] and [2.7]: no smoothing algorithm applied
+analysis_smooth <- "Yes"   #Primary analysis: smoothing algorithm applied
+#analysis_smooth <- "No"   #Secondary analyses [1.6] and [2.7]: no smoothing algorithm applied
 
 #----------------------------- 0.2 Initial set up: bootstrap method parameters ---------------------------------
 
 if (method == "Bootstrap"){
 
 #---- Specify method for dealing with censored data (unhash required row)
-analysis_censored_values <- "replace with limits"        #Base case analysis   [1.0]: replace left-censored data ("<10") with 10, right-censored data (">600") with 600
-# analysis_censored_values <- "replace with 750"         #Sensitivity analysis [1.1]: replace left-censored data with 5, right-censored data with 750
-# analysis_censored_values <- "replace with 900"         #Sensitivity analysis [1.2]: replace left-censored data with 5, right-censored data with 900
-# analysis_censored_values <- "replace with 1200"        #Sensitivity analysis [1.3]: replace left-censored data with 5, right-censored data with 1200
-# analysis_censored_values <- "replace with 1800"        #Sensitivity analysis [1.4]: replace left-censored data with 5, right-censored data with 1800
+analysis_censored_values <- "replace with limits"        #Primary analysis   [1.0]: replace left-censored data ("<10") with 10, right-censored data (">600") with 600
+# analysis_censored_values <- "replace with 750"         #Secondary analysis [1.1]: replace left-censored data with 5, right-censored data with 750
+# analysis_censored_values <- "replace with 900"         #Secondary analysis [1.2]: replace left-censored data with 5, right-censored data with 900
+# analysis_censored_values <- "replace with 1200"        #Secondary analysis [1.3]: replace left-censored data with 5, right-censored data with 1200
+# analysis_censored_values <- "replace with 1800"        #Secondary analysis [1.4]: replace left-censored data with 5, right-censored data with 1800
 
 #--- Specify whether or not to run bootstrap sampling
-run_bootstrap <-  "Yes"     #Base case (runs Nsim bootstrap samples)
-#run_bootstrap <-  "No"     #Sensitivity analysis [1.5]: no bootstrapping conducted (uses YFCCP n=951 data alone)
+run_bootstrap <-  "Yes"     #Primary analysis (runs Nsim bootstrap samples)
+#run_bootstrap <-  "No"     #Secondary analysis [1.5]: no bootstrapping conducted (uses YFCCP n=951 data alone)
 }
 
 #----------------------------- 0.3 Initial set up: parametric method parameters ---------------------------------
@@ -88,20 +88,20 @@ run_bootstrap <-  "Yes"     #Base case (runs Nsim bootstrap samples)
 if (method == "Parametric"){
   
 #---- Specify upper bound for right-censored data region in fitdistrplus code
-FC_maximum      <- 1000          #Base case 
-#FC_maximum     <- 2000          #Sensivity analysis  [2.1]: Upper bound set to 2000 (keep base case parameterisation)
-#FC_maximum     <- 3000          #Sensitvity analysis [2.2]: Upper bound set to 3000 (keep base case parameterisation)
+FC_maximum      <- 1000          #Primary analysis [2.0]
+#FC_maximum     <- 2000          #Secondary analysis [2.1]: Upper bound set to 2000 (keep base case parameterisation)
+#FC_maximum     <- 3000          #Secondary analysis [2.2]: Upper bound set to 3000 (keep base case parameterisation)
   
 #---- Specify Paramaterisation
-param          <- "base case"    #Base case [2.0]: lognormal distributions used for noIBD subgroups (FC1 and FC2), Weibull used for IBD subgroups
-#param         <- "lnorm"        #Sensitivity analysis [2.3]: lognormal distributions used for all subgroups
-#param         <- "weib"         #Sensitivity analysis [2.4]: Weibull distributions used for all subgroups
-#param         <- "gamma"        #Sensitivity analysis [2.5]: gamma distributions used for all subgroups
-#param         <- "norm"         #Sensitivity analysis [2.6]: normal distributions used for all subgroups
+param          <- "base case"    #Primary analysis  [2.0]: lognormal distributions used for noIBD subgroups (FC1 and FC2), Weibull used for IBD subgroups
+#param         <- "lnorm"        #Secondary analysis [2.3]: lognormal distributions used for all subgroups
+#param         <- "weib"         #Secondary analysis [2.4]: Weibull distributions used for all subgroups
+#param         <- "gamma"        #Secondary analysis [2.5]: gamma distributions used for all subgroups
+#param         <- "norm"         #Secondary analysis [2.6]: normal distributions used for all subgroups
   
 #---- Specify whether to run an outer loop to account for uncertainty in the parametric parameter estimates
-outer_loop <- "NO"               #Base case: no outer loop run
-#outer_loop <- "YES"             #Sensitivity analysis [2.9]: Outer loop n=1000 
+outer_loop <- "NO"               #Primary analysis : no outer loop run
+#outer_loop <- "YES"             #Secondary analysis [2.9]: Outer loop n=1000 
   
 if (outer_loop=="YES"){
     Nsim_outer_loop <- 1000       #For [2.9] specify number of outer loop simulations to run (warning - this increases the time taken to run the simulation significantly - may take several days to run outer loop of 1,000 depending on computer specification)
@@ -225,7 +225,7 @@ data_sim <- data_sim[sample(nrow(data_sim),size=Nsim, replace=TRUE),]
 for (i in 1:length(Imp_values)){
 for (b in 1:length(Bias_values)) {
       
-#-- First error model application: FC1 values                
+#-- First error model application: FC1 values (note, if exploring a single-test strategy, only one application of the error model would be required)              
 #Generate FC1 values including additional imprecision and bias (g_FC1) from the baseline FC1 values
 data_sim$g_FC1 <- data_sim$FC1 + data_sim$FC1*rnorm(length(data_sim$FC1),0,1)*Imp_values[i] + Bias_values[b]
       
@@ -284,7 +284,7 @@ time_elapsed <- proc.time() - time_start
 
 #----------------------------- 3.0 ANALYSIS: error model simulation using parametric sampling method ----------------    
 
-#For guidance on fitdistrplus package used in this code see file:///C:/Users/hssasm/Downloads/v64i04%20(2).pdf
+#For guidance on fitdistrplus package used in this code see https://www.jstatsoft.org/article/view/v064i04
 
 ##---------- Example of distribution derivation (for reference only, not needed to run the simulation) ----
 # #Example provided for FC1 noIBD population
@@ -370,7 +370,7 @@ data_params <- read.csv("data_params.csv")
 #Using the parameter specifications provided in the data_params file, simulate distributions for IBD and noIBD subgroups
 
 if (param=="base case") {
-#Base case = lnorm parameterization for noIBD populations, and Weibull for IBD
+#Base case = lnorm parameterization for noIBD populations, and Weibull for IBD [i.e. primary analysis]
 temp_noIBD  <- rlnorm(Nsim_noIBD, data_params$noIBD_FC1_param1[data_params$Parameterization=="Lnorm" & data_params$FC_upper==FC_maximum], 
                                   data_params$noIBD_FC1_param2[data_params$Parameterization=="Lnorm" & data_params$FC_upper==FC_maximum])
 temp_IBD    <- rweibull(Nsim_IBD, data_params$IBD_FC1_param1[data_params$Parameterization=="Weib"    & data_params$FC_upper==FC_maximum],   
@@ -492,7 +492,7 @@ Loop_spec[i,b]  <- spec
 }
 #end of error model loop (no outer loop)
 
-#----- Error model simulation (sensitivity analysis [2.9]: with outer loop simulation to capture parametric uncertainty)
+#----- Error model simulation (secondary analysis [2.9]: with outer loop simulation to capture parametric uncertainty)
   
 if(outer_loop=="YES"){
 
@@ -645,11 +645,11 @@ rm(temp, temp_sens, temp_spec, temp_sens_1, temp_sens_2, temp_sens_3, temp_sens_
 #setwd("Select\\Directory\\Pathway")
 
 #----- Save results 
-#write.csv(Loop_sens, "Loop_sens.csv")                #Nb: these are the raw "noisy" versions of the results [Sensitivity analyses 1.6 and 2.7]
+#write.csv(Loop_sens, "Loop_sens.csv")                #Nb: these are the raw "noisy" versions of the results [secondary analyses 1.6 and 2.7]
 #write.csv(Loop_spec, "Loop_spec.csv")
-#write.csv(Loop_sens_smooth, "Loop_sens_smooth.csv")  #Nb: these are the "smooth" versions of the results (base case)
+#write.csv(Loop_sens_smooth, "Loop_sens_smooth.csv")  #Nb: these are the "smooth" versions of the results (primary analysis)
 #write.csv(Loop_spec_smooth, "Loop_spec_smooth.csv")
-##Note: remember to rename/move these files as necessary when running sensitivity analyses so existing files do not get overwritten
+##Note: remember to rename/move these files as necessary when running secondary analyses so existing files do not get overwritten
 
 
 #----------------------------- 6.0 RESULTS:  contour plots --------------------------------
